@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LED Disco Controller</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 36px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            font-size: 16px;
+            margin-bottom: 40px;
+        }
+
+        .led-display {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 40px;
+        }
+
+        .light-indicator {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: #ddd;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .light-indicator::after {
+            content: '';
+            position: absolute;
+            top: 20%;
+            left: 20%;
+            width: 30%;
+            height: 30%;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+        }
+
+        .light-indicator.on {
+            box-shadow: 0 0 80px rgba(255, 255, 255, 0.8);
+        }
+
+        .light-indicator.red {
+            background: radial-gradient(circle, #ff6b6b, #ee5a6f);
+            box-shadow: 0 0 80px rgba(255, 107, 107, 0.9);
+        }
+
+        .light-indicator.green {
+            background: radial-gradient(circle, #51cf66, #37b24d);
+            box-shadow: 0 0 80px rgba(81, 207, 102, 0.9);
+        }
+
+        .light-indicator.blue {
+            background: radial-gradient(circle, #4dabf7, #339af0);
+            box-shadow: 0 0 80px rgba(77, 171, 247, 0.9);
+        }
+
+        .light-indicator.yellow {
+            background: radial-gradient(circle, #ffd93d, #f6c23e);
+            box-shadow: 0 0 80px rgba(255, 217, 61, 0.9);
+        }
+
+        .light-indicator.cyan {
+            background: radial-gradient(circle, #00f2fe, #4facfe);
+            box-shadow: 0 0 80px rgba(0, 242, 254, 0.9);
+        }
+
+        .light-indicator.purple {
+            background: radial-gradient(circle, #f093fb, #c471ed);
+            box-shadow: 0 0 80px rgba(240, 147, 251, 0.9);
+        }
+
+        .light-indicator.orange {
+            background: radial-gradient(circle, #ff9a56, #ff6a3d);
+            box-shadow: 0 0 80px rgba(255, 154, 86, 0.9);
+        }
+
+        .light-indicator.pink {
+            background: radial-gradient(circle, #ff6ba9, #ff5287);
+            box-shadow: 0 0 80px rgba(255, 107, 169, 0.9);
+        }
+
+        .light-indicator.white {
+            background: radial-gradient(circle, #ffffff, #e0e0e0);
+            box-shadow: 0 0 80px rgba(255, 255, 255, 0.9);
+        }
+
+.control-section {
+            margin-bottom: 30px;
+        }
+
+        .control-section h2 {
+            font-size: 20px;
+            color: #555;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .disco-button {
+            width: 100%;
+            padding: 30px;
+            border: none;
+            border-radius: 15px;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: white;
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            margin-bottom: 20px;
+        }
+
+        .disco-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.4);
+        }
+
+        .disco-button:active {
+            transform: translateY(-2px);
+        }
+
+        .disco-button.active {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        }
+
+
+
+        .color-buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .color-btn {
+            padding: 20px;
+            border: none;
+            border-radius: 15px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: white;
+            text-transform: uppercase;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .color-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .color-btn:active {
+            transform: translateY(0);
+        }
+
+        .color-btn.red {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .color-btn.green {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .color-btn.blue {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        }
+
+        .power-toggle {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .toggle-btn {
+            background: #ddd;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #666;
+        }
+
+        .toggle-btn.on {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .status {
+            text-align: center;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: 500;
+            display: none;
+        }
+
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎆 LED Disco Controller</h1>
+        <p class="subtitle">Control your RGB LED with disco effects!</p>
+        
+        <div class="led-display">
+            <div class="light-indicator" id="lightIndicator"></div>
+        </div>
+
+        <div class="control-section">
+            <button class="disco-button" id="discoBtn" onclick="toggleDisco()">
+                🎉 START DISCO MODE
+            </button>
+        </div>
+
+<div class="control-section">
+            <h2>Manual Color Control</h2>
+            <div class="power-toggle">
+                <button class="toggle-btn" id="powerBtn" onclick="togglePower()">Turn ON</button>
+            </div>
+            <div class="color-buttons">
+                <button class="color-btn red" onclick="setColor('red')">Red</button>
+                <button class="color-btn green" onclick="setColor('green')">Green</button>
+                <button class="color-btn blue" onclick="setColor('blue')">Blue</button>
+            </div>
+        </div>
+
+        <div class="status" id="status"></div>
+    </div>
+
+    <script>
+        const API_URL = 'https://wizklub.com/api/secured/wiziot-poll-request/';
+        const API_ACCESS_KEY = 'RjMtMFRidnNleUZwLWN3NnBZZXo=';
+        const API_SECRET_KEY = 'QjZCZWl2dkxWTWs0NHFNNHhhOHAwY1U3amFqMlFGbzJkQQ==';
+        const DEVICE_ID = 'sahil02_IoT_device';
+
+        let isPowerOn = false;
+        let currentColor = 'red';
+        let isDiscoMode = false;
+        let discoInterval = null;
+        let discoSpeed = 100; // milliseconds - super fast!
+
+        const colors = ['red', 'green', 'blue', 'yellow', 'cyan', 'purple', 'orange', 'pink', 'white'];
+
+        function showStatus(message, type) {
+            const statusEl = document.getElementById('status');
+            statusEl.textContent = message;
+            statusEl.className = `status ${type}`;
+            
+            if (type !== 'loading') {
+                setTimeout(() => {
+                    statusEl.style.display = 'none';
+                }, 3000);
+            }
+        }
+
+        async function sendCommand(color, power) {
+            const payload = {
+                mode: 'WRITE',
+                device_id: DEVICE_ID,
+                source: 'API',
+                api: 'tricolor',
+                type: 'color_power',
+                color: color,
+                power: power
+            };
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Api-Access-Key': API_ACCESS_KEY,
+                        'Api-Secret-Key': API_SECRET_KEY,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    updateUI();
+                } else {
+                    showStatus(`Error: ${data.message || 'Failed to send command'}`, 'error');
+                }
+            } catch (error) {
+                showStatus(`Network error: ${error.message}`, 'error');
+                console.error('Error:', error);
+            }
+        }
+
+        function togglePower() {
+            if (isDiscoMode) {
+                showStatus('Please stop disco mode first!', 'error');
+                return;
+            }
+            
+            isPowerOn = !isPowerOn;
+            const power = isPowerOn ? '1' : '0';
+            updateUI();
+            sendCommand(currentColor, power);
+            
+            if (isPowerOn) {
+                showStatus(`LED turned ON - ${currentColor.toUpperCase()}`, 'success');
+            } else {
+                showStatus('LED turned OFF', 'info');
+            }
+        }
+
+        function setColor(color) {
+            if (isDiscoMode) {
+                showStatus('Please stop disco mode first!', 'error');
+                return;
+            }
+            
+            currentColor = color;
+            if (isPowerOn) {
+                sendCommand(color, '1');
+                showStatus(`Color changed to ${color.toUpperCase()}`, 'success');
+            } else {
+                updateUI();
+                showStatus(`Color set to ${color.toUpperCase()}. Turn on power to see the light.`, 'info');
+            }
+        }
+
+        function toggleDisco() {
+            isDiscoMode = !isDiscoMode;
+            const discoBtn = document.getElementById('discoBtn');
+            
+            if (isDiscoMode) {
+                discoBtn.classList.add('active');
+                discoBtn.textContent = '🎆 STOP DISCO MODE';
+                isPowerOn = true;
+                startDiscoMode();
+                showStatus('🎉 Disco mode activated! Party time!', 'success');
+            } else {
+                discoBtn.classList.remove('active');
+                discoBtn.textContent = '🎉 START DISCO MODE';
+                stopDiscoMode();
+                showStatus('Disco mode stopped', 'info');
+            }
+        }
+
+        function startDiscoMode() {
+            if (discoInterval) {
+                clearInterval(discoInterval);
+            }
+            
+            discoInterval = setInterval(() => {
+                const randomColor = colors[Math.floor(Math.random() * colors.length)];
+                currentColor = randomColor;
+                
+                // Update visual display with all colors
+                updateUI();
+                
+                // Map colors to device (device only supports red, green, blue)
+                let deviceColor = randomColor;
+                if (randomColor === 'yellow' || randomColor === 'orange') {
+                    deviceColor = 'red';
+                } else if (randomColor === 'cyan' || randomColor === 'white') {
+                    deviceColor = 'green';
+                } else if (randomColor === 'purple' || randomColor === 'pink') {
+                    deviceColor = 'blue';
+                }
+                
+                sendCommand(deviceColor, '1');
+            }, discoSpeed);
+        }
+
+        function stopDiscoMode() {
+            if (discoInterval) {
+                clearInterval(discoInterval);
+                discoInterval = null;
+            }
+            isPowerOn = false;
+            updateUI();
+            sendCommand(currentColor, '0');
+        }
+
+function updateUI() {
+            const powerBtn = document.getElementById('powerBtn');
+            const lightIndicator = document.getElementById('lightIndicator');
+
+            if (isPowerOn || isDiscoMode) {
+                powerBtn.textContent = 'Turn OFF';
+                powerBtn.classList.add('on');
+                lightIndicator.className = `light-indicator on ${currentColor}`;
+            } else {
+                powerBtn.textContent = 'Turn ON';
+                powerBtn.classList.remove('on');
+                lightIndicator.className = `light-indicator ${currentColor}`;
+            }
+        }
+
+        // Initialize
+        updateUI();
+    </script>
+</body>
+</html>
